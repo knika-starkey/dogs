@@ -29,7 +29,7 @@ function Dog(name, breed, weight) {
     else if (this.speed >= 20) alert(`${this.name} швидше не може!`);
     else {
       this.speed *= dop.toFixed(2);
-      alert(`Моя швидкість дорівнює ${this.speed}`);
+      //alert(`Моя швидкість дорівнює ${this.speed}`);
     }
   };
   this.start = function () {
@@ -54,11 +54,45 @@ let spot = new Dog("Spot", "Chihuahua", 10);
 
 let dogs = [fido, fluffy, spot];
 
-for (let i = 0; i < dogs.length; i++) {
-  alert(dogs[i]);
-  dogs[i].bark();
-  dogs[i].start();
-  dogs[i].changeSpeed();
-}
+// for (let i = 0; i < dogs.length; i++) {
+//   alert(dogs[i]);
+//   dogs[i].bark();
+//   dogs[i].start();
+//   dogs[i].changeSpeed();
+// }
 // fido.setAge(-2); // "Цей собака, очевидно, ще не з'явився на світ..."
 // alert(fido.getAge()); // 0
+let t;
+function raise() {
+  let dist = 50000;
+
+  let stayAm = [];
+  for (let i = 0; i < dogs.length; i++) {
+    dogs[i].start();
+  }
+
+  let dStart = new Date().getTime();
+  function stay() {
+    let dNow = new Date().getTime();
+    for (let i = 0; i < dogs.length; i++) {
+      stayAm[i] = dist - (dogs.speed * (dNow - dStart)) / 1000;
+      return stayAm.every((x) => {
+        return x <= 0;
+      });
+    }
+  }
+
+  let str = `<table><tr><th>Ім'я</th><th>Порода</th><th>Вага</th><th>Швидкість</th><th>Залишилось фінішу</th></tr>`;
+  for (let i = 0; i < dogs.length; i++) {
+    if (!stay()) {
+      dogs[i].changeSpeed();
+      str += `<tr><td>${dogs[i].name}</td><td>${dogs[i].breed}</td><td>${dogs[i].weight}</td><td>${dogs[i].speed}</td><td>${stayAm[i]}</td></tr>`;
+    } else {
+      str += `</table>`;
+      document.getElementById("raises").innerHTML = str;
+      clearInterval(t);
+    }
+  }
+}
+
+t = setInterval(raise, 1000);
